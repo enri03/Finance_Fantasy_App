@@ -16,7 +16,7 @@ class TransactionController extends Controller
             'stock_id' => 'required|integer',
             'purchase_price' => 'required|numeric',
             'purchase_date' => 'required',
-            'purchase_quantity' => 'required|integer',
+            'purchase_quantity' => 'required|integer|min:1',
             
         ]);
 

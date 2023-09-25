@@ -163,7 +163,6 @@ export const buyStock = (stockData) => async (dispatch, getState) => {
         stockQuantity: data.purchase_quantity,
       })
     );
-    dispatch(getTransactions());
   } catch (error) {
     const message =
       "Please enter a valid quantity and make sure to select a stock to buy";
@@ -182,8 +181,10 @@ export const buyStock = (stockData) => async (dispatch, getState) => {
 export const updateBalace = (updateData) => async (dispatch, getState) => {
   const newBalance =
     updateData.userBalance - updateData.stockQuantity * updateData.stockValue;
-
   try {
+    if ( newBalance < 0) { 
+      throw new Error("You do not heave enought money to buy this stock")
+    }
     dispatch({ type: "UPDATE_BALANCE_REQUEST" });
     const {
       userLogin: { userInfo },
@@ -205,6 +206,7 @@ export const updateBalace = (updateData) => async (dispatch, getState) => {
       type: "CREATE_STOCK_SUCCESS",
       payload: data,
     });
+    dispatch(getTransactions());
   } catch (error) {
     dispatch({
       type: "UPDATE_BALANCE_FAIL",

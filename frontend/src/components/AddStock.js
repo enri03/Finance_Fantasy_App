@@ -11,31 +11,35 @@ function AddStock() {
   const [stockData, setStockData] = useState({});
 
   const userLogin = useSelector((state) => state.userLogin);
-  const {userInfo } = userLogin;
+  const { userInfo } = userLogin;
   const buyStockStatus = useSelector((state) => state.buyStockInfo);
-  const {error,success,message} = buyStockStatus;
+  const { error, success, message } = buyStockStatus;
+  const updatedBalanceInfo = useSelector((state) => state.updatedBalanceInfo);
+  const { error: balanceError } = updatedBalanceInfo;
 
   const dispatch = useDispatch();
   const stockInfo = useSelector((state) => state.stockInfo);
   const { recentStocks, loading } = stockInfo;
-  const handleClose = () => {setShow(false); dispatch({type:'CREATE_STOCK_RESET'})};
+  const handleClose = () => {
+    setShow(false);
+    dispatch({ type: "CREATE_STOCK_RESET" });
+    dispatch({ type: "UPDATE_BALANCE_RESET" });
+  };
   const handleShow = () => setShow(true);
- 
+
   const handleSubmit = async () => {
-    dispatch(
-        buyStock(stockData)
-    );
+    dispatch(buyStock(stockData));
   };
 
   return (
     <>
-    
       <Button id="addStock" variant="primary" onClick={handleShow}>
         Create new purchase
       </Button>
       <Modal show={show} onHide={handleClose}>
-        {error&&<Message variant='danger'>{error}</Message>}
-        {success&&<Message variant='success'>{message}</Message>}
+        {error && <Message variant="danger">{error}</Message>}
+        {success && <Message variant="success">{message}</Message>}
+        {balanceError && <Message variant="danger">{balanceError}</Message>}
         <Modal.Header>
           <Modal.Title>Purchase a stock</Modal.Title>
         </Modal.Header>
@@ -49,11 +53,23 @@ function AddStock() {
                 onChange={(e) => {
                   setStockData({
                     ...stockData,
-                    client_id:userInfo.user.id,
-                    stock_id: e.target.options[e.target.selectedIndex].getAttribute("data-id"),
-                    stockName: e.target.options[e.target.selectedIndex].getAttribute("data-name"),
-                    purchase_price:e.target.options[e.target.selectedIndex].getAttribute("data-price"),
-                    purchase_date: new Date().toISOString().slice(0, 19).replace("T", " "),
+                    client_id: userInfo.user.id,
+                    stock_id:
+                      e.target.options[e.target.selectedIndex].getAttribute(
+                        "data-id"
+                      ),
+                    stockName:
+                      e.target.options[e.target.selectedIndex].getAttribute(
+                        "data-name"
+                      ),
+                    purchase_price:
+                      e.target.options[e.target.selectedIndex].getAttribute(
+                        "data-price"
+                      ),
+                    purchase_date: new Date()
+                      .toISOString()
+                      .slice(0, 19)
+                      .replace("T", " "),
                   });
                 }}
               >
@@ -62,7 +78,8 @@ function AddStock() {
                   ? "Loading..."
                   : recentStocks.map((stock) => {
                       return (
-                        <option key={stock.stock_id}
+                        <option
+                          key={stock.stock_id}
                           value={stock.current_price}
                           data-id={stock.stock_id}
                           data-price={stock.current_price}
@@ -81,11 +98,14 @@ function AddStock() {
                 type="number"
                 placeholder="Enter volume"
                 className="stock-volume"
+                value={stockData.purchase_quantity}
                 onChange={(e) => {
-                  setStockData({
-                    ...stockData,
-                    purchase_quantity: e.target.value,
-                  });
+                  if (/^[1-9]\d*$/.test(e.target.value)) {
+                    setStockData({
+                      ...stockData,
+                      purchase_quantity: e.target.value,
+                    });
+                  }
                 }}
               />
             </Form.Group>
@@ -100,7 +120,6 @@ function AddStock() {
           </Button>
         </Modal.Footer>
       </Modal>
-
     </>
   );
 }

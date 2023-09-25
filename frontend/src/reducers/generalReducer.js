@@ -108,6 +108,8 @@ export const updatedBalanceReducer = (state={},action)=> {
             return { updated: true};
           case "UPDATE_BALANCE_FAIL":
             return { updated: false, error: action.payload };
+            case "UPDATE_BALANCE_RESET":
+              return {};
             default:
                 return state
     }
