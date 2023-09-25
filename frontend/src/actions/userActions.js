@@ -200,7 +200,7 @@ export const updateBalace = (updateData) => async (dispatch, getState) => {
       { newBalance: parseFloat(newBalance) },
       config
     );
-    dispatch({ type: "UPDATE_BALANCE_SUCCESS"});
+    dispatch({ type: "UPDATE_BALANCE_SUCCESS", payload: data });
     dispatch({
       type: "CREATE_STOCK_SUCCESS",
       payload: data,
